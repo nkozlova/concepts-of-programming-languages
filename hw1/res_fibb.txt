@@ -1,0 +1,12 @@
+putstr The n-th number of sequence fibonacci
+putstr Your number n:
+get a
+init b 1
+init c 1
+add c b
+sw c b
+sub a
+goto a 5
+putstr The result:
+pr c
+exit

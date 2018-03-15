@@ -1,90 +1,62 @@
 import sys
+import instruction as ins
 import numpy as np
-import help as h
 
 
-class Decoder:
-    def __init__(self, input_, output_):
-        self.offset = 0
-        self.input = input_
-        self.output = output_
-        self.program = np.array([], dtype=np.int32)
-        self.static = np.array([], dtype=np.int32)
+def detected_command(data, command, arg1, arg2, offset):
+    if command == ins.STR_ADD:
+        return ins.ADD + ' ' + ins.REGISTERS[arg1] + ' ' + ins.REGISTERS[arg2] + '\n'
 
-    def decode(self):
-        data = np.fromfile(self.input, dtype=np.int32)[::2]
+    if command == ins.STR_SUB:
+        return ins.SUB + ' ' + ins.REGISTERS[arg1] + '\n'
 
-        output = open(self.output, 'w')
+    if command == ins.STR_PR:
+        return ins.PR + ' ' + ins.REGISTERS[arg1] + '\n'
 
-        self.offset = data[0]
-        limit = int((self.offset - 1) / h.IP_OFFSET)
+    if command == ins.STR_GET:
+        return ins.GET + ' ' + ins.REGISTERS[arg1] + '\n'
 
-        for i in range(limit):
-            command = data[h.IP_OFFSET * i + 1]
-            level1 = data[h.IP_OFFSET * i + 2]
-            arg1 = data[h.IP_OFFSET * i + 3]
-            level2 = data[h.IP_OFFSET * i + 4]
-            arg2 = data[h.IP_OFFSET * i + 5]
+    if command == ins.STR_INIT:
+        return ins.INIT + ' ' + ins.REGISTERS[arg1] + ' ' + str(arg2) + '\n'
 
-            output.write(self.descriptor(data, command, level1, arg1, level2, arg2))
+    if command == ins.STR_GOTO:
+        return ins.GOTO + ' ' + ins.REGISTERS[arg1] + ' ' + str(arg2) + '\n'
 
-    def descriptor(self, data, command, level1, arg1, level2, arg2):
-        if command == h.COMMAND_BEGIN:
-            return h.STR_BEGIN + ' ' + str(arg1) + '\n'
+    if command == ins.STR_SW:
+        return ins.SW + ' ' + ins.REGISTERS[arg1] + ' ' + ins.REGISTERS[arg2] + '\n'
 
-        elif command == h.COMMAND_END:
-            return h.STR_END + '\n'
+    if command == ins.STR_EXIT:
+        return ins.EXIT
 
-        elif command == h.COMMAND_CALL:
-            return h.STR_CALL + ' ' + str(arg1) + '\n'
+    if command == ins.STR_PUTSTR:
+        string = ins.PUTSTR + ' '
+        for i in range(arg2):
+            string += chr(data[offset + arg1 + i + 1])
+        return string + '\n'
 
-        elif command == h.COMMAND_ADD:
-            return h.STR_ADD + self.get_argument(level1, arg1) + self.get_argument(level2, arg2) + '\n'
-
-        elif command == h.COMMAND_SUB:
-            return h.STR_SUB + self.get_argument(level1, arg1) + self.get_argument(level2, arg2) + '\n'
-
-        elif command == h.COMMAND_MOVE:
-            return h.STR_MOVE + self.get_argument(level1, arg1) + self.get_argument(level2, arg2) + '\n'
-
-        elif command == h.COMMAND_GO:
-            return h.STR_GO + ' ' + '*' * level1 + h.RE_REGISTERS[arg1] + ' ' + str(arg2) + '\n'
-
-        elif command == h.COMMAND_GET:
-            return h.STR_GET + self.get_argument(level1, arg1) + '\n'
-
-        elif command == h.COMMAND_POP:
-            return h.STR_POP + '\n'
-
-        elif command == h.COMMAND_PUSH:
-            return h.STR_PUSH + self.get_argument(level1, arg1) + '\n'
-
-        elif command == h.COMMAND_GET:
-            return h.STR_GET + self.get_argument(level1, arg1) + '\n'
-
-        elif command == h.COMMAND_PUT_STR:
-            string = h.STR_PUT_STR + ' '
-            for i in range(arg1):
-                string += chr(data[self.offset + level1 + i])
-            return string + '\n'
-
-        elif command == h.COMMAND_PRINT:
-            return h.STR_PRINT + self.get_argument(level1, arg1) + '\n'
-
-        elif command == h.COMMAND_EXIT:
-            return h.STR_EXIT + '\n'
-
-        else:
-            exit('Wrong function')
-
-    @staticmethod
-    def get_argument(level, arg):
-        if level == 0:
-            return ' ' + str(arg)
-        else:
-            return ' ' + '*' * level + h.RE_REGISTERS[arg]
+    return '\n'
 
 
-if len(sys.argv) > 2:
-    decoder = Decoder(sys.argv[1], sys.argv[2])
-    decoder.decode()
+def write_to_file(file, commands):
+    file = open(file, 'w')
+
+    offset = commands[0] - 1
+    limit = int((commands[0] - 1) / 3)
+
+    for i in range(limit):
+        command = commands[3 * i + 1]
+        arg1 = commands[3 * i + 2]
+        arg2 = commands[3 * i + 3]
+
+        file.write(detected_command(commands, command, arg1, arg2, offset))
+
+
+def read_from_file(file):
+    return np.fromfile(file, dtype=np.int32)
+
+
+if len(sys.argv) != 3:
+    print("Wrong input")
+else:
+    commands = read_from_file(sys.argv[1])
+    write_to_file(sys.argv[2], commands)

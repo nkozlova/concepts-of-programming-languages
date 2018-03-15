@@ -1,105 +1,65 @@
 import sys
+import instruction as ins
 import numpy as np
-import help as h
 
 
-class Encoder:
-    def __init__(self, input_, output_):
-        self.offset = 0
-        self.input = input_
-        self.output = output_
-        self.program = np.array([], dtype=np.int32)
-        self.static = np.array([], dtype=np.int32)
+def detected_command(line):
+    if line[0] == ins.ADD:
+        return np.array([ins.STR_ADD, ins.RE_REGISTERS[line[1]], ins.RE_REGISTERS[line[2]]], dtype=np.int32)
 
-    def encode(self):
-        file = open(self.input, 'r')
+    if line[0] == ins.SUB:
+        return np.array([ins.STR_SUB, ins.RE_REGISTERS[line[1]], 0], dtype=np.int32)
 
-        for line in file:
-            self.program = np.append(self.program, self.descriptor(line))
+    if line[0] == ins.PR:
+        return np.array([ins.STR_PR, ins.RE_REGISTERS[line[1]], 0], dtype=np.int32)
 
-        self.program = np.array([len(self.program) + 1, ] + list(self.program) + list(self.static))
+    if line[0] == ins.INIT:
+        return np.array([ins.STR_INIT, ins.RE_REGISTERS[line[1]], line[2]], dtype=np.int32)
 
-        self.program.tofile(self.output)
+    if line[0] == ins.GET:
+        return np.array([ins.STR_GET, ins.RE_REGISTERS[line[1]], 0], dtype=np.int32)
 
-    def descriptor(self, line_):
+    if line[0] == ins.GOTO:
+        return np.array([ins.STR_GOTO, ins.RE_REGISTERS[line[1]], line[2]], dtype=np.int32)
+
+    if line[0] == ins.SW:
+        return np.array([ins.STR_SW, ins.RE_REGISTERS[line[1]], ins.RE_REGISTERS[line[2]]], dtype=np.int32)
+
+    if line[0] == ins.EXIT:
+        return np.array([ins.STR_EXIT, 0, 0], dtype=np.int32)
+
+    print("Wrong command ", line[0])
+    return np.array([], dtype=np.int32)
+
+
+def write_to_file(file, commands):
+    commands.tofile(file)
+    #statics.tofile(file)
+
+
+def read_from_file(file):
+    file = open(file, 'r')
+    commands = np.array([], dtype=np.int32)
+    static = np.array([], dtype=np.int32)
+    offset = 0
+    for line_ in file:
         line = line_.split()
-        command = line[0]
 
-        if command == h.STR_BEGIN:
-            return np.array([h.COMMAND_BEGIN, 0, hash(line[1]), 0, 0])
-
-        elif command == h.STR_END:
-            return np.array([h.COMMAND_END, 0, 0, 0, 0])
-
-        elif command == h.STR_CALL:
-            return np.array([h.COMMAND_CALL, 0, hash(line[1]), 0, 0])
-
-        elif command == h.STR_ADD:
-            level1, arg1 = self.get_arguments(line[1])
-            level2, arg2 = self.get_arguments(line[2])
-            return np.array([h.COMMAND_ADD, level1, arg1, level2, arg2])
-
-        elif command == h.STR_SUB:
-            level1, arg1 = self.get_arguments(line[1])
-            level2, arg2 = self.get_arguments(line[2])
-            return np.array([h.COMMAND_SUB, level1, arg1, level2, arg2])
-
-        elif command == h.STR_MOVE:
-            level1, arg1 = self.get_arguments(line[1])
-            level2, arg2 = self.get_arguments(line[2])
-            return np.array([h.COMMAND_MOVE, level1, arg1, level2, arg2])
-
-        elif command == h.STR_GO:
-            level1, arg1 = self.get_arguments(line[1])
-            level2, arg2 = self.get_arguments(line[2])
-            return np.array([h.COMMAND_GO, level1, arg1, level2, arg2])
-
-        elif command == h.STR_POP:
-            return np.array([h.COMMAND_POP, 0, 0, 0, 0])
-
-        elif command == h.STR_PUSH:
-            level, arg = self.get_arguments(line[1])
-            return np.array([h.COMMAND_PUSH, level, arg, 0, 0])
-
-        elif command == h.STR_GET:
-            level, arg = self.get_arguments(line[1])
-            return np.array([h.COMMAND_GET, level, arg, 0, 0])
-
-        elif command == h.STR_PUT_STR:
+        if line[0] == ins.PUTSTR:
             line = line_.split(maxsplit=1)[1].strip()
-            code = np.array([], dtype=np.int32)
             for symbol in line:
-                code = np.append(code, ord(symbol))
-            self.offset += len(line)
-            self.static = np.append(self.static, code)
-            return np.array([h.COMMAND_PUT_STR, self.offset - len(line), len(line), 0, 0])
-
-        elif command == h.STR_PRINT:
-            level, arg = self.get_arguments(line[1])
-            return np.array([h.COMMAND_PRINT, level, arg, 0, 0])
-
-        elif command == h.STR_EXIT:
-            return np.array([h.COMMAND_EXIT, 0, 0, 0, 0])
-
+                static = np.append(static, ord(symbol))
+            commands = np.append(commands, [ins.STR_PUTSTR, offset, len(line)])
+            offset += len(line)
         else:
-            exit("It's wrong command")
+            commands = np.append(commands, detected_command(line))
 
-    @staticmethod
-    def get_arguments(str):
-        level = 0
-
-        for symbol in str:
-            if symbol == '*':
-                level += 1
-            else:
-                arg = str[level:]
-                try:
-                    arg = int(arg)
-                except ValueError:
-                    arg = h.REGISTERS[arg]
-                return level, arg
+    commands = np.array([len(commands) + 1, ] + list(commands) + list(static), dtype=np.int32)
+    return commands
 
 
-if len(sys.argv) > 2:
-    encoder = Encoder(sys.argv[1], sys.argv[2])
-    encoder.encode()
+if len(sys.argv) != 3:
+    print("Wrong input")
+else:
+    commands = read_from_file(sys.argv[1])
+    write_to_file(sys.argv[2], commands)
