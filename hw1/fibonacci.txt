@@ -1,4 +1,4 @@
-putstr The n-th number of sequence fibonacci
+putstr The n-th number of sequence fibonacci (start with index 0)
 putstr Your number n:
 get a
 init b 1

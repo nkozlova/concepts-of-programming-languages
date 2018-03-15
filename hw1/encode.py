@@ -34,14 +34,15 @@ def detected_command(line):
 
 def write_to_file(file, commands):
     commands.tofile(file)
-    #statics.tofile(file)
 
 
 def read_from_file(file):
     file = open(file, 'r')
+
     commands = np.array([], dtype=np.int32)
     static = np.array([], dtype=np.int32)
     offset = 0
+
     for line_ in file:
         line = line_.split()
 
