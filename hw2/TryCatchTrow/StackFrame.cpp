@@ -1,10 +1,10 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include "StackFrame.h"
 
 
 int count = 0;
 
-// Стэк всех объектов по уровням (на i-м try i-й вектор объектов стэка)
+// РЎС‚СЌРє РІСЃРµС… РѕР±СЉРµРєС‚РѕРІ РїРѕ СѓСЂРѕРІРЅСЏРј (РЅР° i-Рј try i-Р№ РІРµРєС‚РѕСЂ РѕР±СЉРµРєС‚РѕРІ СЃС‚СЌРєР°)
 std::stack<std::vector<Object*>> objects;
 
 Object::Object() : num(count++) {
