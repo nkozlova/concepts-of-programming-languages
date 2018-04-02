@@ -1,12 +1,17 @@
-putstr The n-th number of sequence fibonacci (start with index 0)
+putstr The n-th number of sequence "fibonacci" (start with index 0) f(n) = f(n - 1) / 7 + f(n - 2), [1, 1.5, 1.21429, 1.67347, 1.42857 ...]
 putstr Your number n:
 get a
-init b 1
-init c 1
+init b 1.0
+init c 1.5
+init d 1.5
+goto a 9.0
+pr b
+exit
+save d c
 add c b
-sw c b
-sub a
-goto a 5
+save b d
+dec a
+goto a 9.0
 putstr The result:
-pr c
+pr b
 exit

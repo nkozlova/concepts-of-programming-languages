@@ -7,8 +7,8 @@ def detected_command(data, command, arg1, arg2, offset):
     if command == ins.STR_ADD:
         return ins.ADD + ' ' + ins.REGISTERS[arg1] + ' ' + ins.REGISTERS[arg2] + '\n'
 
-    if command == ins.STR_SUB:
-        return ins.SUB + ' ' + ins.REGISTERS[arg1] + '\n'
+    if command == ins.STR_DEC:
+        return ins.DEC + ' ' + ins.REGISTERS[arg1] + '\n'
 
     if command == ins.STR_PR:
         return ins.PR + ' ' + ins.REGISTERS[arg1] + '\n'
@@ -22,16 +22,16 @@ def detected_command(data, command, arg1, arg2, offset):
     if command == ins.STR_GOTO:
         return ins.GOTO + ' ' + ins.REGISTERS[arg1] + ' ' + str(arg2) + '\n'
 
-    if command == ins.STR_SW:
-        return ins.SW + ' ' + ins.REGISTERS[arg1] + ' ' + ins.REGISTERS[arg2] + '\n'
+    if command == ins.STR_SAVE:
+        return ins.SAVE + ' ' + ins.REGISTERS[arg1] + ' ' + ins.REGISTERS[arg2] + '\n'
 
     if command == ins.STR_EXIT:
-        return ins.EXIT
+        return ins.EXIT + '\n'
 
     if command == ins.STR_PUTSTR:
         string = ins.PUTSTR + ' '
-        for i in range(arg2):
-            string += chr(data[offset + arg1 + i + 1])
+        for i in range(int(arg2)):
+            string += chr(int(data[offset + arg1 + i + 1]))
         return string + '\n'
 
     return '\n'
@@ -52,7 +52,7 @@ def write_to_file(file, commands):
 
 
 def read_from_file(file):
-    return np.fromfile(file, dtype=np.int32)
+    return np.fromfile(file, dtype=np.float32)
 
 
 if len(sys.argv) != 3:
