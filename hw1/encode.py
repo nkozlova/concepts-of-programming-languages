@@ -7,6 +7,9 @@ def detected_command(line):
     if line[0] == ins.ADD:
         return np.array([ins.STR_ADD, ins.RE_REGISTERS[line[1]], ins.RE_REGISTERS[line[2]]], dtype=np.float32)
 
+    if line[0] == ins.DEL:
+        return np.array([ins.STR_DEL, ins.RE_REGISTERS[line[1]], ins.RE_REGISTERS[line[2]]], dtype=np.float32)
+
     if line[0] == ins.DEC:
         return np.array([ins.STR_DEC, ins.RE_REGISTERS[line[1]], 0], dtype=np.float32)
 

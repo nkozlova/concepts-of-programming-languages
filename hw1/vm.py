@@ -30,7 +30,11 @@ class VirtualMachine:
             return True
 
         if command == ins.STR_ADD:
-            self.memory.set(arg1, self.memory.get(arg1) / 7 + self.memory.get(arg2))
+            self.memory.set(arg1, self.memory.get(arg1) + self.memory.get(arg2))
+            return True
+
+        if command == ins.STR_DEL:
+            self.memory.set(arg1, self.memory.get(arg1) / self.memory.get(arg2))
             return True
 
         if command == ins.STR_DEC:

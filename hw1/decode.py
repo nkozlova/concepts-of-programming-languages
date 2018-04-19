@@ -7,6 +7,9 @@ def detected_command(data, command, arg1, arg2, offset):
     if command == ins.STR_ADD:
         return ins.ADD + ' ' + ins.REGISTERS[arg1] + ' ' + ins.REGISTERS[arg2] + '\n'
 
+    if command == ins.STR_DEL:
+        return ins.DEL + ' ' + ins.REGISTERS[arg1] + ' ' + ins.REGISTERS[arg2] + '\n'
+
     if command == ins.STR_DEC:
         return ins.DEC + ' ' + ins.REGISTERS[arg1] + '\n'
 
