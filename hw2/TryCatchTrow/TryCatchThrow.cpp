@@ -33,7 +33,9 @@ int main() {
 		MY_THROW(TEST_EXCEPTION_NEW);
 	) MY_CATCH(TEST_EXCEPTION_NEW,
 		std::cout << "Catching exception 1" << std::endl;
-	)
+	) MY_END
+
+	std::cout << std::endl;
 
 	MY_TRY(
 		std::cout << "Throwing exception 1" << std::endl;
@@ -42,7 +44,9 @@ int main() {
 		std::cout << "Catching exception 0" << std::endl;
 	) MY_CATCH(TEST_EXCEPTION_NEW,
 		std::cout << "Catching exception 1" << std::endl;
-	)
+	) MY_END
+
+	std::cout << std::endl;
 
 	MY_TRY(
 		MY_TRY(
@@ -50,14 +54,14 @@ int main() {
 			MY_THROW(TEST_EXCEPTION_NEW);
 		) MY_CATCH(TEST_EXCEPTION_NEW,
 			std::cout << "Catching exception 1" << std::endl;
-		)
+		) MY_END
 
 		MY_TRY(
 			std::cout << "Throwing exception 1" << std::endl;
 			MY_THROW(TEST_EXCEPTION_NEW);
 		) MY_CATCH(TEST_EXCEPTION_NEW,
 			std::cout << "Catching exception 1" << std::endl;
-		)
+		) MY_END
 
 		A();
 
@@ -65,22 +69,28 @@ int main() {
 		std::cout << "Catching exception 0" << std::endl;
 	) MY_CATCH(TEST_EXCEPTION_NEW,
 		std::cout << "Catching exception 1" << std::endl;
-	)
+	) MY_END
 
+	std::cout << std::endl;
+	
 	MY_TRY(
 		MY_TRY(
 			Object t1;
 			Object t2;
+			std::cout << "Throwing exception 1" << std::endl;
+			MY_THROW(TEST_EXCEPTION_NEW);
 			Object t3;
 		) MY_CATCH(TEST_EXCEPTION,
 			std::cout << "Catching exception 0" << std::endl;
-		)
+		) MY_END
 
 		std::cout << "Throwing exception 1" << std::endl;
 		MY_THROW(TEST_EXCEPTION_NEW);
 	) MY_CATCH(TEST_EXCEPTION_NEW,
 		std::cout << "Catching exception 1" << std::endl;
-	)
+	) MY_END
+	
+	std::cout << std::endl;
 	
 	MY_TRY(
 		Object t1;
@@ -88,7 +98,9 @@ int main() {
 		Object t3;
 	) MY_CATCH(TEST_EXCEPTION,
 		std::cout << "Catching exception 0" << std::endl;
-	)
+	) MY_END
+
+	std::cout << std::endl;
 
 	MY_TRY(
 		Object t;
@@ -96,8 +108,10 @@ int main() {
 		MY_THROW(TEST_EXCEPTION);
 	) MY_CATCH(TEST_EXCEPTION,
 		std::cout << "Catching exception 0" << std::endl;
-	)
+	) MY_END
 
+	std::cout << std::endl;
+	
 	MY_TRY(
 		Object t1;
 		Object t2;
@@ -111,12 +125,14 @@ int main() {
 			MY_THROW(TEST_EXCEPTION);
 		) MY_CATCH(TEST_EXCEPTION,
 			std::cout << "Catching exception 0" << std::endl;
-		)
+		) MY_END
 
 	) MY_CATCH(TEST_EXCEPTION_NEW,
 		std::cout << "Catching exception 1" << std::endl;
-	)
+	) MY_END
 	
+	std::cout << std::endl;
+
 	std::cout << "Exit" << std::endl;
     return 0;
 }

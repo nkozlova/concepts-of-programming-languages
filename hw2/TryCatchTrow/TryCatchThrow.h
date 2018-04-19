@@ -27,13 +27,18 @@ StackFrame stack;
 	}
 
 #define MY_THROW(exception) \
-	if (exp_ != -1 || it <= 0) exit(1); \
+	if (exp_ != exception && exp_ != -1 || it <= 0) exit(1); \
 	exp_ = exception; \
 	stack.delete_(); \
-	longjmp(MY_EVENT[--it], 1);
+	longjmp(MY_EVENT[--it], 1); 
 
 #define MY_CATCH(type_exception, doing) \
 	else if (exp_ == type_exception) { \
 		doing; \
 		exp_ = -1; \
+	}
+
+#define MY_END \
+	if (exp_ != -1) { \
+		MY_THROW(exp_); \
 	}
