@@ -26,6 +26,15 @@ END(D)
 CLASS(E, B, C)
 END(E)
 
+class RealA {
+public:
+	virtual ~RealA() {}
+};
+
+class RealB : public RealA {
+
+};
+
 int main() 
 {
 	A *a = new A();
@@ -39,6 +48,12 @@ int main()
 	TYPEID(c);
 	TYPEID(d);
 	TYPEID(e);
+
+	/*std::cout << std::endl;
+	std::cout << "a -> a : a " << a << std::endl;
+	A *aa;
+	DYNAMIC_CAST(A, a, aa);	
+	std::cout << "aa " << aa << std::endl;
 
 	std::cout << std::endl;
 	std::cout << "a -> b : a " << a << std::endl;
@@ -86,7 +101,34 @@ int main()
 	std::cout << "e -> a : e " << e << std::endl;
 	A *ea;
 	DYNAMIC_CAST(A, e, ea);
-	std::cout << "ea " << ea << std::endl;
+	std::cout << "ea " << ea << std::endl;*/
+	
+	C* eToC;
+	DYNAMIC_CAST(C, e, eToC);
+	std::cout << "eToC " << eToC << std::endl;
+
+	E* eToCtoE;
+	DYNAMIC_CAST(E, eToC, eToCtoE);
+	std::cout << "eToCtoE " << eToCtoE << std::endl;
+
+	B* eToCtoB;
+	DYNAMIC_CAST(B, eToC, eToCtoB);
+	std::cout << "eToCtoB " << eToCtoB << std::endl;
+
+	A* eToCtoBToA;
+	DYNAMIC_CAST(A, eToCtoB, eToCtoBToA);
+	std::cout << "eToCtoBToA " << eToCtoBToA << std::endl;
+	
+	D* eToCtoBToD;
+	DYNAMIC_CAST(D, eToCtoB, eToCtoBToD);
+	std::cout << "eToCtoBToD " << eToCtoBToD << std::endl;
+
+	RealB* realB = new RealB;
+	RealA* realCast = dynamic_cast<RealA*>(realB);
+	std::cout << "realCast " << realCast << std::endl;
+
+	RealB* reverseCast = dynamic_cast<RealB*>(realCast);
+	std::cout << "reverseCast " << reverseCast << std::endl;
 	
 	system("pause");
 	return 0;

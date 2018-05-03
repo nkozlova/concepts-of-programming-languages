@@ -32,7 +32,7 @@ void addClass(std::string NameOfFromClass, std::string NameOfToClasses)
 	std::set<std::string> to;
 	convertString(NameOfToClasses, to);
 
-	parentsOfClasses.insert({ NameOfFromClass,{} });
+	parentsOfClasses.insert({ NameOfFromClass, {} });
 
 	parentsOfClasses[NameOfFromClass] = to;
 	for (auto parent : to)
@@ -57,8 +57,10 @@ class NameOfClass : public __VA_ARGS__ \
 { \
 public: \
 	static TypeInfo info; \
+	TypeInfo realInfo; \
 	NameOfClass() \
 	{ \
+		realInfo = TypeInfo(#NameOfClass); \
 		if (parentsOfClasses.find(#NameOfClass) == parentsOfClasses.end()) \
 		{ \
 			addClass(#NameOfClass, RET_SHARP((__VA_ARGS__))); \

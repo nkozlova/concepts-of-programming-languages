@@ -12,6 +12,7 @@ class TypeInfo
 
 public:
 	TypeInfo(std::string name) : nameOfClass(name), hashCode(hash()) {}
+	TypeInfo() : nameOfClass(""), hashCode(0) {}
 
 	long hash() 
 	{
