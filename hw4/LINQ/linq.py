@@ -6,24 +6,40 @@ class My_Linq:
         self.data = d
 
     def Select(self, func):
+        '''
+        Select – применение некоторой операции к каждому элементу последовательности;
+        '''
         res = (func(item) for item in self.data)
         return My_Linq(res)
 
     def Flatten(self):
+        '''
+        Flatten – выпрямление последовательности последовательностей в плоскую последовательность;
+        '''
         res = (item for items in self.data for item in items)
         return My_Linq(res)
 
     def Where(self, pred):
+        '''
+        Where – фильтрация последовательности по некоторому предикату;
+        '''
         res = (item for item in self.data if pred(item))
         return My_Linq(res)
 
     def Take(self, k):
-        res = []
-        for i in range(k):
-            res.append(next(self.data))
+        '''
+        Take – взять первые k элементов из последовательности;
+        '''
+        res = (next(self.data) for i in range(k))
         return My_Linq(res)
 
     def GroupBy(self, key):
+        '''
+        GroupBy – сгруппировать элементы по заданному ключу.
+        В результате должна получиться последовательность пар
+        <ключ, последовательность соответствующих этому ключу элементов>.
+        Аналогично обычному LINQ ключом может быть функция от элементов;
+        '''
         res = {}
         for item in self.data:
             k = key(item)
@@ -34,14 +50,28 @@ class My_Linq:
         return My_Linq(res)
 
     def OrderBy(self, key):
+        '''
+        OrderBy – отсортировать элементы по заданному ключу – функции от элементов;
+        '''
         res = (sorted(self.data, key=key))
         return My_Linq(res)
 
     def ToList(self):
+        '''
+        ToList – положить все элементы последовательности в список.
+        '''
         return list(self.data)
 
 
 # Задача 1
+'''
+Реализовать бесконечный поток чисел Фибоначчи,
+выбрать из них только делящиеся на 3,
+возвести в квадрат каждое четное и
+взять первые пять полученных чисел.
+'''
+
+
 def fibonacci():
     a, b = 1, 1
     while True:
@@ -57,6 +87,13 @@ print(task1.
 
 
 # Задача 2
+'''
+Реализовать Word Count для некоторого текстового файла.
+Нужно разбить строки файла по пробелу и для каждого полученного токена посчитать число его появлений в данном файле.
+Токены и их частоты должны быть выведены отсортированными по частоте.
+'''
+
+
 def spliting(string):
     res = re.split(r"[;,.?!:—\s]", string)
     res = filter(lambda item: item != '', res)
